@@ -4,6 +4,9 @@ const app = express()
 const port = 3000
 const { engine } = require('express-handlebars')
 const path = require('path')
+
+app.use(express.static(path.join(__dirname, 'public')))
+console.log(path.join(__dirname, 'public'))
     // http logger
 app.use(morgan('combined'))
 

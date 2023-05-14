@@ -24,6 +24,8 @@
         "mongoose": "^7.0.4"
     },
     "devDependencies": {
+        "method-override": "^3.0.0",
+        "mongoose-slug-updater": "^3.3.0",
         "morgan": "^1.10.0",
         "node-sass": "^8.0.0",
         "nodemon": "^2.0.22"

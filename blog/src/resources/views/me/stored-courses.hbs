@@ -1,30 +1,85 @@
-<div class="mt-4">
+<div class='mt-4'>
     <h2> Khoá học của tôi </h2>
-
-    <table class="table mt-4">
+    <a href="/me/trash-courses" type="button" class="btn btn-link"> Thùng rác ({{deleteCount}}) </a>
+    <table class='table mt-4'>
         <thead>
             <tr>
-                <th scope="col">#</th>
-                <th scope="col">Tên khoá học</th>
-                <th scope="col">level</th>
-                <th scope="col" colspan="2">Thời gian tạo</th>
+                <th scope='col'>#</th>
+                <th scope='col'>Tên khoá học</th>
+                <th scope='col'>level</th>
+                <th scope='col' colspan='2'>Thời gian tạo</th>
             </tr>
         </thead>
         <tbody>
             {{#each courses}}
             <tr>
-                <th scope="row">{{sum 1 @index}}</th>
-                <td>{{this.name}}</td>
+                <th scope='row'>{{sum 1 @index}}</th>
+                <td>
+                    <a href="/courses/{{this.slug}}"> {{this.name}} </a>
+                </td>
                 <td>{{this.level}}</td>
                 <td>{{this.createdAt}}</td>
                 <td>
-                    <a href="/courses/{{this._id}}/edit" class="btn btn-link"> Sửa </a>
+                    <a href='/courses/{{this._id}}/edit' class='btn btn-link'> Sửa </a>
                 </td>
                 <td>
-                    <a href="/courses/" class="btn btn-link"> Xoá </a>
+                    <a href='/courses/' class='btn btn-link' data-toggle='modal' data-target='#delete-course-modal' data-id='{{this._id}}'> Xoá </a>
                 </td>
             </tr>
-            {{/each}}
+
+            {{else}} 
+                <td colspan="5" class = 'text-center'> 
+                    Bạn chưa đăng khoá học nào 
+                    <a href='/courses/create' > Đăng khoá học </a> 
+                </td>
+            {{/each}} 
+
+          
         </tbody>
     </table>
+
+
+    
+    <div class='modal fade' id='delete-course-modal' tabindex='-1' role='dialog' aria-labelledby='delete-course-modal'
+        aria-hidden='true'>
+        <div class='modal-dialog' role='document'>
+            <div class='modal-content'>
+                <div class='modal-header'>
+                    <h5 class='modal-title' id='delete-course-modal'>Xoá khoá học</h5>
+                    <button type='button' class='close' data-dismiss='modal' aria-label='Close'>
+                        <span aria-hidden='true'>&times;</span>
+                    </button>
+                </div>
+                <div class='modal-body'>
+                    Bạn đã chắc chắn xoá khoá học này ?
+                </div>
+                <div class='modal-footer'>
+                    <button type='button' class='btn btn-primary' id='btn-delete-modal'> Xoá </button>
+                    <button type='button' class='btn btn-danger' data-dismiss='modal'> Huỷ </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <form method='POST' action='' id = 'form-delete-course'></form>
+
+    <script>
+        document.addEventListener('DOMContentLoaded',() => {
+            var form = document.getElementById('form-delete-course'); 
+            var id = null; 
+            var btn_delete_modal = document.getElementById('btn-delete-modal'); 
+
+            $('#delete-course-modal').on('show.bs.modal', (event) => {
+                var button = $(event.relatedTarget); 
+                id = button.data('id'); 
+                form.action = '/courses/'+ id + '?_method=PATCH'; 
+            }); 
+
+            btn_delete_modal.onclick = ()=>{ 
+                console.log('hello world'); 
+                form.submit(); 
+            }
+        }); 
+
+    </script>
 </div>

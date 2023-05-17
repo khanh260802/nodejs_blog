@@ -2,19 +2,20 @@
     <div class="row">
 
         <div class="col-lg-9">
-            <h1> {{course.name}} </h1>
-            <p>
-                {{course.description}}
-                <iframe width="1280" height="711" src="https://www.youtube.com/embed/{{course.videoID}}; web-share" allowfullscreen></iframe>
-            </p>
+            <div class="container">
+                <p>
+                    <iframe width="640" height="355.55"
+                        src="https://www.youtube.com/embed/{{course.videoID}}; web-share" allowfullscreen></iframe>
+                </p>
+                <h1> {{course.name}} </h1>
+                <p> {{course.description}} </p>
+            </div>
         </div>
 
         <div class="col-lg-3">
 
-            <button>ĐĂNG KÝ HỌC</button>
+            <button type="button" class="btn btn-primary">ĐĂNG KÝ HỌC</button>
         </div>
 
     </div>
 </div>
-
-

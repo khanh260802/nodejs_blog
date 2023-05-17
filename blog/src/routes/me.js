@@ -3,5 +3,7 @@ const router = express.Router();
 const MeController  = require('../app/controllers/MeController'); 
 
 
-router.use('/stored-courses', MeController.show); 
+router.get('/stored-courses', MeController.show); 
+router.get('/trash-courses', MeController.courses_deleted); 
+
 module.exports = router; 

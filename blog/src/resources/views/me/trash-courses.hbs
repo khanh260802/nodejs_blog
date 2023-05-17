@@ -1,36 +1,60 @@
 <div class='mt-4'>
     <h2> Khoá học đã xoá </h2>
     <a href="/me/stored-courses" type="button" class="btn btn-link"> Danh sách khoá học </a>
-    <table class='table mt-4'>
-        <thead>
-            <tr>
-                <th scope='col'>#</th>
-                <th scope='col'>Tên khoá học</th>
-                <th scope='col'>level</th>
-                <th scope='col' colspan='2'>Thời gian xoá</th>
-            </tr>
-        </thead>
-        <tbody>
-            {{#each courses}}
-            <tr>
-                <th scope='row'>{{sum 1 @index}}</th>
-                <td>{{this.name}}</td>
-                <td>{{this.level}}</td>
-                <td>{{this.deletedAt}}</td>
-                <td>
-                    <a href='/courses/' class='btn btn-link btn-restore' data-toggle='modal'
-                        data-target='#restore-course-modal' data-id='{{this._id}}'> khôi phục </a>
-                </td>
-                <td>
-                    <a href='/courses/' class='btn btn-link' data-toggle='modal' data-target='#destroy-course-modal'
-                        data-id='{{this._id}}'> xoá vĩnh viễn </a>
-                </td>
-            </tr>
-            {{/each}}
 
+    <form method="POST" action="/courses/actions-from-trash" id = 'form-actions'>
 
-        </tbody>
-    </table>
+        <div class='mt-4 d-flex align-items-center'>
+            <div class='form-check'>
+                <input type='checkbox' class='form-check-input checkbox-all' id='checkbox-all'>
+                <label class='form-check-label' for='checkbox-all'> Chọn tất cả </label>
+            </div>
+            <select class='form-control form-control-sm select-action-form' id='select-action' name='select-action'
+                required>
+                <option value='' selected> --Chọn hành động--</option>
+                <option value='destroy'> Xoá vĩnh viễn </option>
+                <option value='restore'> Khôi phục </option>
+            </select>
+            <button type='submit' class='btn btn-primary' id='btn-exec' disabled data-toggle='modal' data-target='#destroy-course-modal'> 
+                Thực hiện 
+            </button>
+        </div>
+
+        <table class='table mt-4'>
+            <thead>
+                <tr>
+                    <th scope='col' colspan='2'>#</th>
+                    <th scope='col'>Tên khoá học</th>
+                    <th scope='col'>level</th>
+                    <th scope='col' colspan='3'>Thời gian xoá</th>
+                </tr>
+            </thead>
+            <tbody>
+                {{#each courses}}
+                <tr>
+                    <th>
+                        <div class='form-check'>
+                            <input type='checkbox' class='form-check-input checkbox-items' name='checkbox-items[]'
+                                value={{this._id}}>
+                        </div>
+                    </th>
+                    <th scope='row'>{{sum 1 @index}}</th>
+                    <td>{{this.name}}</td>
+                    <td>{{this.level}}</td>
+                    <td>{{this.deletedAt}}</td>
+                    <td>
+                        <a href='/courses/' class='btn btn-link btn-restore' data-toggle='modal'
+                            data-target='#restore-course-modal' data-id='{{this._id}}'> khôi phục </a>
+                    </td>
+                    <td>
+                        <a href='/courses/' class='btn btn-link' data-toggle='modal' data-target='#destroy-course-modal'
+                            data-id='{{this._id}}'> xoá vĩnh viễn </a>
+                    </td>
+                </tr>
+                {{/each}}
+            </tbody>
+        </table>
+    </form>
 
 
 
@@ -59,20 +83,38 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            var form = document.getElementById('form-destroy-course');
+            var form = document.forms['form-destroy-course'];
             var btn_destroy_modal = document.getElementById('btn-destroy-modal');
             //var btn_restore = document.getElementsByClassName('btn-restore');
-            var btn_restore = $('.btn-restore'); 
+            var btn_restore = $('.btn-restore');
+            var checkboxAll = $('#checkbox-all');
+            var checkboxItems = $('input[name="checkbox-items[]"]');
+            var btnExec = $('#btn-exec');
+            var id = null; 
+
+            console.log($('select[name="select-action"]').val());
+
 
             $('#destroy-course-modal').on('show.bs.modal', (event) => {
                 var button = $(event.relatedTarget);
-                var id = button.data('id');
+                id = button.data('id');
                 form.action = '/courses/' + id + '/destroy' + '?_method=DELETE';
+
+                if(!id)
+                    form = document.forms['form-actions']; 
+                
             });
 
             btn_destroy_modal.onclick = () => {
                 form.submit();
             }
+
+            btnExec.click(function (e) {
+                var action = $('select[name="select-action"]').val();
+                if (action === 'destroy') {
+                    e.preventDefault();
+                } 
+            })
 
             /*
             for (let btn of btn_restore) {
@@ -84,11 +126,31 @@
             }
             */
 
-            btn_restore.click(function() {
-                var id = $(this).data('id'); 
+            btn_restore.click(function () {
+                var id = $(this).data('id');
                 form.action = '/courses/' + id + '/restore' + '?_method=PATCH';
-                form.submit(); 
+                form.submit();
             });
+
+            checkboxAll.change(function () {
+                checkboxItems.prop('checked', checkboxAll.prop('checked'));
+                btnExecUpdateEneble();
+            })
+
+            checkboxItems.change(function () {
+                var isSelectAll = $('input[name="checkbox-items[]"]:checked').length === checkboxItems.length;
+                checkboxAll.prop('checked', isSelectAll);
+                btnExecUpdateEneble();
+            })
+
+            function btnExecUpdateEneble() {
+                if ($('input[name="checkbox-items[]"]:checked').length)
+                    btnExec.removeAttr('disabled');
+                else
+                    btnExec.attr('disabled', 'disabled');
+            }
+
+            
 
         });
 
